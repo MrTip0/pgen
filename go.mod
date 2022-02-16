@@ -1,3 +1,3 @@
-module github.com/tipettino/pgen
+module github.com/MrTip0/pgen
 
 go 1.17
