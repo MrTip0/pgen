@@ -1,33 +1,41 @@
 package main
 
 import (
+	"crypto/rand"
 	"crypto/sha1"
 	"fmt"
-	"math/rand"
-	"time"
+	"io"
 )
 
 func main() {
 	pass := []rune{}
-	chars := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#@*%&?-_~")
+	chars := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#@*%&?-_~.")
 
-	seed := rand.NewSource(time.Now().UnixNano())
-	rand := rand.New(seed)
+	numbers := make([]byte, 20)
+	if _, err := io.ReadFull(rand.Reader, numbers); err != nil {
+		fmt.Printf("An error occured: %s", err.Error())
+	}
+
 	max := len(chars)
 
 	for i := 0; i < 20; i++ {
-		pass = append(pass, chars[rand.Int() % max])
+		pass = append(pass, chars[int(numbers[i]) % max])
 	}
 
 	if !CheckSpecialandNumber(pass) {
-		pn, pc := rand.Int() % 20, rand.Int() % 20
+		el := 2
+		pn, pc := numbers[0] % 20, numbers[1] % 20
 		for pn == pc {
-			pn = rand.Int() % 20
+			pn = numbers[el] % 20
+			el ++
+			el = el % 20
 		}
-		pass[pn] = rune((rand.Int() % 10) + '0')
+		pass[pn] = rune((numbers[el] % 10) + '0')
+		el ++
+		el = el % 20
 
-		schars := []rune("!#@*%&?-_~")
-		pass[pc] = schars[rand.Int() % 10]
+		schars := []rune("!#@*%&?-_~.")
+		pass[pc] = schars[numbers[el] % 10]
 	}
 
 	spass := string(pass)
