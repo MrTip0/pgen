@@ -3,32 +3,44 @@ package main
 import (
 	"crypto/rand"
 	"crypto/sha1"
+	"flag"
 	"fmt"
 	"io"
+	"os"
 )
 
 func main() {
 	pass := []rune{}
-	chars := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#@*%&?-_~.")
+	alfabeth := string("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#@*%&?-_~.")
+	plen := 20
 
-	numbers := make([]byte, 20)
+	flag.StringVar(&alfabeth, "alfa", alfabeth, "the alfabeth")
+	flag.IntVar(&plen, "l", plen, "the lenght of the password")
+
+	flag.Parse()
+
+	numbers := make([]byte, plen)
 	if _, err := io.ReadFull(rand.Reader, numbers); err != nil {
 		fmt.Printf("An error occured: %s", err.Error())
+		os.Exit(1)
 	}
+
+	chars := []rune(alfabeth)
 
 	max := len(chars)
 
-	for i := 0; i < 20; i++ {
+	for i := 0; i < plen; i++ {
 		pass = append(pass, chars[int(numbers[i]) % max])
 	}
 
 	if !CheckSpecialandNumber(pass) {
 		el := 2
-		pn, pc := numbers[0] % 20, numbers[1] % 20
+		plenb := byte(plen)
+		pn, pc := numbers[0] % plenb, numbers[1] % plenb
 		for pn == pc {
-			pn = numbers[el] % 20
+			pn = numbers[el] % plenb
 			el ++
-			el = el % 20
+			el = el % plen
 		}
 		pass[pn] = rune((numbers[el] % 10) + '0')
 		el ++
