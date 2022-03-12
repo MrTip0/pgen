@@ -1,6 +1,16 @@
 # pgen
 A simple password generator  
 
+## Installation
+### Requierements
+- go >= 1.17
+- go bin folder in your $PATH variable
+
+### Installation
+```sh
+go install github.com/MrTip0/pgen@latest
+```
+
 ## How to use  
 
 simply  
